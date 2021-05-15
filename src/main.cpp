@@ -7,6 +7,7 @@
 #include "lilv/lilvmm.hpp"
 #include "parent.hpp"
 #include "child.hpp"
+#include "urid_map.hpp"
 
 void write_func(SuilController controller, uint32_t port_index, uint32_t bufsize, uint32_t protocol, void const* buffer) {
   // do nothing
@@ -74,6 +75,13 @@ int main(int argc, char** argv) {
 
   auto parent = view.nativeWindow();
 
+  LV2_URID_Map urid_map {
+    NULL,
+    urid_map_fn
+  };
+  const LV2_Feature map_feature = {
+    LV2_URID__map, &urid_map
+  };
   const LV2_Feature parent_feature = {
     LV2_UI__parent, &parent
   };
@@ -81,6 +89,7 @@ int main(int argc, char** argv) {
     LV2_UI__idleInterface, NULL
   };
   const LV2_Feature* ui_features[] = {
+    &map_feature,
     &parent_feature,
     &idle_feature,
     NULL
